@@ -9,9 +9,10 @@ router.get('/', function(req, res) {
 });
 
 // POST	(/activities)	Create a new activity for me to track.
-router.post('/new/:name/:units', function(req, res) {
-  const activity = 'user.activities.'+req.params.name;
-  const options = {'units': req.params.units, reps: []};
+router.post('/', function(req, res) {
+  const activity = 'user.activities.'+req.body.name;
+  const options = {'units': req.body.units, reps: []};
+  console.log(`attempting to add activity ${activity} with units ${req.body.units}`);
   // THIS ADDS AN ACTIVITY TO A USER:
   // > db.trackers.update({'user.username':'jason'}, {$set: {'user.activities.run': {'units':'laps', 'reps':[]}}})
   Tracker.update({ 'user.username': req.user }, { $set: { activity: {options} }}, function(err, results){

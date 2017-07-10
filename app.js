@@ -1,18 +1,24 @@
 'use strict';
 const express = require('express');
 const app = express();
-// using a route handler for convenience
+  // using a route handler for convenience
 const trackerRouter = require('./routes/router');
-// using passport-http for authentication
+  // using passport-http for authentication
 const passport = require('passport');
 const BasicStrategy = require('passport-http').BasicStrategy;
-// using mongoose to add schema to our MondoDB
+  // using mongoose to add schema to our MondoDB
 const mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
-// grab a handle for our model
+  // grab a handle for our model
 const Tracker = require('./models/tracker');
-// gonna need to fetch form data from request body
+  // gonna need to fetch form data from request body
 const bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({extended: true}));
+  // set up mustache template engine
+const mustacheExpress = require('mustache-express');
+app.engine('mustache', mustacheExpress());
+app.set('views', './views');
+app.set('view engine', 'mustache');
 
 // We include this middleware for any route we want to hide behind user authentication.
 const authMiddleware = passport.authenticate("basic", {session: false});
@@ -39,7 +45,7 @@ passport.use(new BasicStrategy(function(username, password, done) {
 mongoose.connect('mongodb://localhost:27017/tracker');
 
 app.get('/', function(req, res) {
-  res.send('Welcome to StatTracker! <a href="/login">Click here</a> to log in.');
+  res.render('index');
 });
 
 app.get('/login', authMiddleware, function(req, res) {
