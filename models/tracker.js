@@ -4,14 +4,14 @@ const trackerSchema = new mongoose.Schema({
     user: {
       username: { type: String, required: true, unique: true },
       password: { type: String, required: true },
-      activities: [{
+      activities: {
         name: { type: String, required: true},
         units: { type: String, required: true },
-        rep: [{
+        reps: [{
           date: { type: Date, default: Date.now },
           count: { type: Number, default: 1 }
         }]
-      }]
+      }
     }
 });
 

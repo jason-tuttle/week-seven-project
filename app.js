@@ -2,7 +2,7 @@
 const express = require('express');
 const app = express();
 // using a route handler for convenience
-const trackerRouter = express.Router();
+const trackerRouter = require('./routes/router');
 // using passport-http for authentication
 const passport = require('passport');
 const BasicStrategy = require('passport-http').BasicStrategy;
@@ -18,8 +18,7 @@ const bodyParser = require('body-parser');
 const authMiddleware = passport.authenticate("basic", {session: false});
 
 passport.use(new BasicStrategy(function(username, password, done) {
-  Tracker.findOne({'user.username': username}, function(err, record) {
-    console.log(`Found: ${record}`);
+  Tracker.findOne({'user.username': username}, {'user.username': 1, 'user.password': 1}, function(err, record) {
     if (err) {
       console.log(err);
     } else {
@@ -51,7 +50,7 @@ app.use('/activities', authMiddleware, trackerRouter);
 
 // LOGOUT
 app.get('/logout', function(req, res) {
-  req.logout();
+  res.status(401);
   res.redirect('/');
 });
 
