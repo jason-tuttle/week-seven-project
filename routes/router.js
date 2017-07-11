@@ -5,7 +5,9 @@ const Tracker = require('../models/tracker');
 // GET	(/activities)	Show a list of all activities I am tracking, and links to their individual pages
 router.get('/', function(req, res) {
   console.log(`User ${req.user} logged in`);
-  Tracker.find({'user.username': req.user}).then(results => res.json(results));
+  const allActs = Tracker.find({'user.username': req.user});
+    allActs.select('user.activities');
+    allActs.exec((err, results) => err ? res.json({'error': error}) : res.render('activities', {activities: results}));
 });
 
 // POST	(/activities)	Create a new activity for me to track.
@@ -19,6 +21,7 @@ router.post('/', function(req, res) {
     err ? res.json({'error': err}) : res.json(results);
   });
   console.log(req.body);
+  res.redirect('/');
 });
 
 // GET	(/activities/{id})	Show information about one activity I am tracking, and give me the data I have recorded for that activity.
