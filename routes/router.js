@@ -5,23 +5,54 @@ const Tracker = require('../models/tracker');
 // GET	(/activities)	Show a list of all activities I am tracking, and links to their individual pages
 router.get('/', function(req, res) {
   console.log(`User ${req.user} logged in`);
-  const allActs = Tracker.find({'user.username': req.user});
+  const allActs = Tracker.findOne({'user.username': req.user});
     allActs.select('user.activities');
-    allActs.exec((err, results) => err ? res.json({'error': error}) : res.render('activities', {activities: results}));
+    allActs.exec(function(err, results) {
+      // const data = results.user.activities;
+      err ? res.json({'error': error}) : res.json(results.user.activities);
+    });
 });
 
 // POST	(/activities)	Create a new activity for me to track.
 router.post('/', function(req, res) {
+  const userQuery = { 'user.username': req.user };
   const activity = 'user.activities.'+req.body.name;
-  const options = {'units': req.body.units, reps: []};
+  const options = {'units': req.body.units, 'reps': []};
+  const newActivity = {};
+  newActivity[activity] = options;
   console.log(`attempting to add activity ${activity} with units ${req.body.units}`);
+  const query = Tracker.find(userQuery);
+  query.select(activity);
+  query.exec(function(err, results) {
+    if (err) {
+      res.json({'error': err})
+    } else {
+      if (results.user) {
+        res.json({'error': 'That activity already exists!'});
+      } else {
+        Tracker.findOneAndUpdate(userQuery,
+          newActivity,
+          { new: true,
+            upsert: true,
+            setDefaultsOnInsert: true
+          },
+          function(err, result) {
+            if (err) { res.json({'update error': err.message}) }
+            else { res.json(result) }
+          }
+        );
+      // Tracker.update({ 'user.username': req.user }, { $set: { activity: {options} }}, function(err, results){
+      //   err ? res.json({'error': err}) : res.json(results);
+      // });
+    }
+  }
+});
   // THIS ADDS AN ACTIVITY TO A USER:
   // > db.trackers.update({'user.username':'jason'}, {$set: {'user.activities.run': {'units':'laps', 'reps':[]}}})
-  Tracker.update({ 'user.username': req.user }, { $set: { activity: {options} }}, function(err, results){
-    err ? res.json({'error': err}) : res.json(results);
-  });
+
+
   console.log(req.body);
-  res.redirect('/');
+
 });
 
 // GET	(/activities/{id})	Show information about one activity I am tracking, and give me the data I have recorded for that activity.
