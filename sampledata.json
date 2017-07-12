@@ -1,0 +1,73 @@
+{ "_id" : ObjectId("5963af59065112e2bae0533c"),
+  "user" :
+  {
+    "username" : "jason",
+    "password" : "password",
+    "activities" :
+      {
+        "bike" : {
+          "units" : "miles",
+          "reps" :
+            [
+              { "date" : "07/09/2017", "count" : 12 },
+              { "date" : "07/10/2017", "count" : 10 }
+            ]
+          },
+        "pushups" : {
+          "units" : "each",
+          "reps" :
+            [
+              { "date" : "07/10/2017", "count" : 10 }
+            ]
+        }
+      }
+    }
+  }
+{ "_id" : ObjectId("5963af6e065112e2bae0533d"),
+  "user" :
+  {
+    "username" : "bob",
+    "password" : "password",
+    "activities" :
+      { "run" :
+        { "units" : "laps",
+          "reps" :
+            [
+              { "date" : "07/06/2107",
+                "count" : 12
+              },
+              {
+                "date" : "07/07/2107",
+                "count" : 12
+              }
+            ]
+          }
+        }
+      }
+    }
+{ "_id" : ObjectId("5963af79065112e2bae0533e"),
+  "user" :
+    {
+      "username" : "bill",
+      "password" : "password",
+      "activities" :
+      {
+        "swim" :
+          {
+            "units" : "laps",
+            "reps" :
+              [
+                { "date" : "07/05/2107",
+                  "count" : 12
+                },
+              [
+                {
+                  "date" : "07/06/2107",
+                  "count" : 12
+                }
+              ]
+            ]
+          }
+        }
+      }
+    }
