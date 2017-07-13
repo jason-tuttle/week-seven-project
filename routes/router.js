@@ -71,6 +71,7 @@ router.get('/:name', function(req, res) {
 ** PUT	(/activities/{id})
 ** Update one activity I am tracking, changing attributes such as name or type.
 ** Does not allow for changing tracked data.
+** TODO
 ***************************************************************************** */
 router.put('/:name', function(req, res) {
   res.json({'data': 'put request incomplete'});
@@ -145,6 +146,7 @@ router.post('/stats/:name', function(req, res) {
 /* *****************************************************************************
 *  DELETE	(/stats/{id})
 *  Remove tracked data for a day.
+** TODO
 ***************************************************************************** */
 router.delete('/stats/:id', function(req, res) {
   // db.trackers.findOneAndUpdate({'user.username':'jason'}, {$pull: {'user.activities.bike.reps': {$in:['07/11/2017']}}})

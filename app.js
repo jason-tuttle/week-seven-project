@@ -21,14 +21,14 @@ app.set('views', './views');
 app.set('view engine', 'mustache');
 
 // We include this middleware for any route we want to hide behind user authentication.
-const authMiddleware = passport.authenticate("basic", {session: false});
+const authMiddleware = passport.authenticate('basic', {session: false});
 
 passport.use(new BasicStrategy(function(username, password, done) {
   Tracker.findOne({'user.username': username}, {'user.username': 1, 'user.password': 1}, function(err, record) {
     if (err) {
       console.log(err);
     } else {
-      let loggedInUser = "";
+      let loggedInUser = '';
       if (record.user.password === password) {
         loggedInUser = record.user.username;
       }
@@ -60,4 +60,4 @@ app.get('/logout', function(req, res) {
   res.redirect('/');
 });
 
-app.listen(3000, function() { console.log("Broadcasting on 3000FM...");});
+app.listen(3000, function() { console.log('Broadcasting on 3000FM...');});
