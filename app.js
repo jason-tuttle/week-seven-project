@@ -9,6 +9,7 @@ const BasicStrategy = require('passport-http').BasicStrategy;
   // using mongoose to add schema to our MondoDB
 const mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
+mongoose.set('debug', true);
   // grab a handle for our model
 const Tracker = require('./models/tracker');
   // gonna need to fetch form data from request body

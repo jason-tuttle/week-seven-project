@@ -14,7 +14,7 @@ router.get('/', function(req, res) {
     allActs.select('user.activities');
     allActs.exec(function(err, results) {
       // const data = results.user.activities;
-      err ? res.json({'error': error}) : res.json(results.user.activities);
+      err ? res.json({'error': err}) : res.json(results.user.activities);
     });
 });
 
@@ -34,7 +34,7 @@ router.post('/', function(req, res) {
   query.select(activity);
   query.exec(function(err, result) {
     if (err) {
-      res.json({'status': 'failed', 'error': err})
+      res.json({'status': 'failed', 'error': err});
     } else {
       console.log(result.user);
       if (result.user.activites) {
@@ -94,7 +94,7 @@ router.delete('/:name', function(req, res) {
   query.select(activity);
   query.exec(function(err, result) {
     if (err) {
-      res.json({'status': 'failed', 'error': err})
+      res.json({'status': 'failed', 'error': err});
     } else {
       console.log(result.user);
       if (result.user.activites) {
@@ -102,7 +102,7 @@ router.delete('/:name', function(req, res) {
       } else {
         Tracker.collection.update({_id: result._id},{$unset: deleteMe}, {new: true}, function(err, newItem) {
           if (err) {
-            res.json({'status': 'failed', 'error': err})
+            res.json({'status': 'failed', 'error': err});
           } else {
             res.json({'status': 'success', 'message': newItem});
           }
@@ -118,7 +118,7 @@ router.delete('/:name', function(req, res) {
 ** POST	(/activities/{id}/stats)
 ** Add tracked data for a day. The data sent with this should include the day
 ** tracked. You can also override the data for a day already recorded.
-** THIS IS BROKE
+** THIS... WORKS?
 ***************************************************************************** */
 router.post('/stats/:name', function(req, res) {
   // db.trackers.update({'user.username':'jason'}, {$addToSet: {'user.activities.bike.reps': {'date':'07/10/2017', 'count':10}}})
@@ -129,14 +129,9 @@ router.post('/stats/:name', function(req, res) {
   const newActivity = {};
   newActivity[activity] = newRep;
 
-  Tracker.findOneAndUpdate({
-    query: {'user.username': req.user},
-    update: {$addToSet: newActivity},
-    new: true,
-    fields: {activity}
-  })
+  Tracker.collection.findOneAndUpdate({'user.username': req.user},{$addToSet: newActivity},{'new': true})
   .then(function(result){
-    res.json(result);
+    res.json({'status':'success', 'data':result});
   })
   .catch(function(err){
     res.json({'error': err});
@@ -146,10 +141,20 @@ router.post('/stats/:name', function(req, res) {
 /* *****************************************************************************
 *  DELETE	(/stats/{id})
 *  Remove tracked data for a day.
-** TODO
+** TODO still busted
 ***************************************************************************** */
-router.delete('/stats/:id', function(req, res) {
+router.delete('/stats/:name', function(req, res) {
+  const deleteActivity = `user.activities.${req.params.name}.reps`;
+  const deleteDate = [req.body.date];
+  deleteDate['$in'] = [req.body.date];
+  // deleteActivityFor[`user.activities.${req.params.name}.reps`] = deleteDate;
   // db.trackers.findOneAndUpdate({'user.username':'jason'}, {$pull: {'user.activities.bike.reps': {$in:['07/11/2017']}}})
-  res.json({'data': 'delete request incomplete'});
+  Tracker.collection.findOneAndUpdate(
+    {'user.username': req.user},
+    {$pull: {[deleteActivity]: {$in: deleteDate}}},
+    {new: true})
+  .then(result => res.json({'status':'success','data':result}))
+  .catch(err => res.json({'status':'failed','error':err}));
 });
+
 module.exports = router;
