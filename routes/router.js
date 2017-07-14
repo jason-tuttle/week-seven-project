@@ -10,12 +10,9 @@ const Tracker = require('../models/tracker');
 ***************************************************************************** */
 router.get('/', function(req, res) {
   console.log(`User ${req.user} logged in`);
-  const allActs = Tracker.findOne({'user.username': req.user});
-    allActs.select('user.activities');
-    allActs.exec(function(err, results) {
-      // const data = results.user.activities;
-      err ? res.json({'error': err}) : res.json(results.user.activities);
-    });
+  Tracker.findOne({'user.username': req.user},'user.activities')
+    .then(results => res.json({'status':'success', 'data':results.user.activities}))
+    .catch(err => res.json({'status': 'failed', 'error': err}));
 });
 
 /* *****************************************************************************
@@ -71,10 +68,23 @@ router.get('/:name', function(req, res) {
 ** PUT	(/activities/{id})
 ** Update one activity I am tracking, changing attributes such as name or type.
 ** Does not allow for changing tracked data.
-** TODO
+** SEEMS TO WORK
 ***************************************************************************** */
 router.put('/:name', function(req, res) {
-  res.json({'data': 'put request incomplete'});
+  const renameTo = {};
+  if (req.body.newName) {
+    renameTo[`user.activities.${req.params.name}`] = `user.activities.${req.body.newName}`;
+  }
+  if (req.body.newUnits) {
+    renameTo[`user.activities.${req.params.name}.units`] = `user.activities.${req.body.newName}.${req.params.name}`;
+  }
+  Tracker.collection.findOneAndUpdate(
+    {'user.username':req.user},
+    {$rename: renameTo},
+    {new: true}
+  )
+  .then(result => res.json({'status':'success', 'data':result}))
+  .catch(err => res.json({'status': 'failed', 'error': err}));
 });
 
 /* *****************************************************************************
@@ -139,7 +149,7 @@ router.post('/stats/:name', function(req, res) {
 });
 
 /* *****************************************************************************
-*  DELETE	(/stats/{id})
+*  DELETE	(/activities/stats/{id})
 *  Remove tracked data for a day.
 ** TODO still busted
 ***************************************************************************** */
