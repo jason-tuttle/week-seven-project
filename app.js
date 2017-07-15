@@ -53,6 +53,22 @@ app.get('/login', authMiddleware, function(req, res) {
   res.redirect('/activities');
 });
 
+app.post('/register', function(req, res) {
+  let newActivity = {};
+  newActivity[`user.activity.${req.body.activity}`] = {units: `${req.body.units}`, reps: []};
+  Tracker.create({user: {
+    username: req.body.username,
+    password:req.body.password
+    }
+  })
+  .then(function(result) {
+    result.update({activities: newActivity}).then();
+    res.json({'status': 'success', 'data':result});
+  })
+  .catch(err => res.json({'status': 'failed', 'data': err}));
+
+});
+
 app.use('/activities', authMiddleware, trackerRouter);
 
 // LOGOUT
