@@ -42,8 +42,9 @@ passport.use(new BasicStrategy(function(username, password, done) {
   });
 }));
 
+let uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/tracker';
 // connect to db
-mongoose.connect('mongodb://localhost:27017/tracker');
+mongoose.connect(uri);
 
 app.get('/', function(req, res) {
   res.render('index');
@@ -66,7 +67,6 @@ app.post('/register', function(req, res) {
     res.json({'status': 'success', 'data':result});
   })
   .catch(err => res.json({'status': 'failed', 'data': err}));
-
 });
 
 app.use('/activities', authMiddleware, trackerRouter);
@@ -77,4 +77,4 @@ app.get('/logout', function(req, res) {
   res.redirect('/');
 });
 
-app.listen(3000, function() { console.log('Broadcasting on 3000FM...');});
+app.listen(process.env.PORT || 3000, function() { console.log('Broadcasting on 3000FM...');});
