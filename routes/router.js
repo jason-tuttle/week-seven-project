@@ -18,6 +18,7 @@ router.get('/', function(req, res) {
 /* *****************************************************************************
 ** POST	(/activities)
 ** Create a new activity for me to track.
+** POST BODY: name, units
 ** THIS IS FIXED
 ***************************************************************************** */
 router.post('/', function(req, res) {
