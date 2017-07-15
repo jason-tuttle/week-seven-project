@@ -151,17 +151,17 @@ router.post('/stats/:name', function(req, res) {
 /* *****************************************************************************
 *  DELETE	(/activities/stats/{id})
 *  Remove tracked data for a day.
-** TODO still busted
+** HOLY SHIT IT FUCKING WORKS!
 ***************************************************************************** */
 router.delete('/stats/:name', function(req, res) {
   const deleteActivity = `user.activities.${req.params.name}.reps`;
-  const deleteDate = [req.body.date];
-  deleteDate['$in'] = [req.body.date];
+  // const deleteDate = [{date: req.body.date}];
+  // deleteDate['$in'] = [{date: req.body.date}];
   // deleteActivityFor[`user.activities.${req.params.name}.reps`] = deleteDate;
   // db.trackers.findOneAndUpdate({'user.username':'jason'}, {$pull: {'user.activities.bike.reps': {$in:['07/11/2017']}}})
   Tracker.collection.findOneAndUpdate(
     {'user.username': req.user},
-    {$pull: {[deleteActivity]: {$in: deleteDate}}},
+    {$pull: {[deleteActivity]: {date: req.body.date}}},
     {new: true})
   .then(result => res.json({'status':'success','data':result}))
   .catch(err => res.json({'status':'failed','error':err}));
