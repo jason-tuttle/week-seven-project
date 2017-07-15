@@ -11,7 +11,7 @@ const Tracker = require('../models/tracker');
 router.get('/', function(req, res) {
   console.log(`User ${req.user} logged in`);
   Tracker.findOne({'user.username': req.user},'user.activities')
-    .then(results => res.json({'status':'success', 'data':results.user.activities}))
+    .then(results => res.json({'status':'success', 'data':results}))
     .catch(err => res.json({'status': 'failed', 'error': err}));
 });
 
@@ -61,7 +61,7 @@ router.get('/:name', function(req, res) {
   const activity = 'user.activities.' + req.params.name;
   let act = Tracker.findOne({'user.username': req.user});
   act.select(activity);
-  act.exec((err, results) => err ? res.json(err) : res.json(results.user.activities));
+  act.exec((err, results) => err ? res.json(err) : res.json(results));
   // Tracker.find({'user.username': req.user}).select(activity).exec(function(results) {res.json(results);});
 });
 
