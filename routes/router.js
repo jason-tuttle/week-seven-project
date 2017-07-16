@@ -11,7 +11,7 @@ const Tracker = require('../models/tracker');
 router.get('/', function(req, res) {
   console.log(`User ${req.user} logged in`);
   Tracker.findOne({'user.username': req.user},'user.activities')
-    .then(results => res.json({'status':'success', 'data':results}))
+    .then(results => res.status(200).json({'status':'success', 'data':results}))
     .catch(err => { res.status(500).json({'status': 'failed', 'error': err.message}); });
 });
 

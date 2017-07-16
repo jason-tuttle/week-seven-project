@@ -8,16 +8,19 @@ function getAllActivities () {
   var myInit = { method: 'GET',
                  headers: headers,
                  mode: 'no-cors',
-                 cache: 'default',
+                 cache: 'no-cache',
                  credentials: 'include' };
 
   fetch('https://stat-tracker-tiy.herokuapp.com/activities', myInit).then(function(response) {
-    if (response.ok) {
+    if (response.status < 400) {
+      // console.log(`server responds: ${response}`);
       return response;
     }
   }).then(function(results) {
-    displayActivities(results.data.user);
+    console.log(results);
+    displayActivities(results.data);
   }).catch(function(error) {
+    console.log(error);
     return error;
   });
 }
@@ -35,18 +38,4 @@ function displayActivities(data) {
   }
 }
 
-(function() {
-  const serverResponse = getAllActivities();
-  if (serverResponse.status === 'error') {
-    activitiesContainer.innerHTML = '<span class="error">There was a problem</span>';
-  } else if (serverResponse.data.user.activities) {
-    serverResponse.data.user.activities.keys.forEach(function(activity) {
-      console.log('activities: '+activity);
-      const activityBox = document.element.createElement('div');
-      const activityName = document.createElement('h2');
-      activityName.textContent = (activity);
-      activityBox.appendChild(activityName);
-      activitiesContainer.appendChild(activityBox);
-    });
-  }
-})();
+getAllActivities();
