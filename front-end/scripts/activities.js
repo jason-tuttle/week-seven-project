@@ -8,12 +8,13 @@ function getAllActivities () {
   var myInit = { method: 'GET',
                  headers: headers,
                  mode: 'no-cors',
-                 cache: 'no-cache',
+                 cache: 'reload',
                  credentials: 'include' };
 
   fetch('https://stat-tracker-tiy.herokuapp.com/activities', myInit).then(function(response) {
+    console.log(response.status);
+    console.log(response.body);
     if (response.status < 400) {
-      // console.log(`server responds: ${response}`);
       return response;
     }
   }).then(function(results) {
