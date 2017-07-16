@@ -12,7 +12,7 @@ router.get('/', function(req, res) {
   console.log(`User ${req.user} logged in`);
   Tracker.findOne({'user.username': req.user},'user.activities')
     .then(results => res.json({'status':'success', 'data':results}))
-    .catch(err => res.json({'status': 'failed', 'error': err}));
+    .catch(err => { res.status(500).json({'status': 'failed', 'error': err.message}); });
 });
 
 /* *****************************************************************************
@@ -27,16 +27,16 @@ router.post('/', function(req, res) {
   const options = {'units': req.body.units, 'reps': []};
   const newActivity = {};
   newActivity[activity] = options;
-  console.log(`attempting to add activity ${activity} with units ${req.body.units}`);
+  // console.log(`attempting to add activity ${activity} with units ${req.body.units}`);
   const query = Tracker.findOne(userQuery);
   query.select(activity);
   query.exec(function(err, result) {
     if (err) {
-      res.json({'status': 'failed', 'error': err});
+      res.status(500).json({'status': 'failed', 'error': err});
     } else {
       console.log(result.user);
       if (result.user.activites) {
-        res.json({'status': 'failed', 'error': 'That activity already exists'});
+        res.status(409).json({'status': 'failed', 'error': 'That activity already exists'});
       } else {
         Tracker.collection.update({_id: result._id},{$set: newActivity}, {new: true, upsert: true}, function(err, newItem) {
           res.json({'status': 'success', 'message': newItem});
@@ -61,7 +61,7 @@ router.get('/:name', function(req, res) {
   const activity = 'user.activities.' + req.params.name;
   let act = Tracker.findOne({'user.username': req.user});
   act.select(activity);
-  act.exec((err, results) => err ? res.json(err) : res.json(results));
+  act.exec((err, results) => err ? res.status(500).json(err) : res.json(results));
   // Tracker.find({'user.username': req.user}).select(activity).exec(function(results) {res.json(results);});
 });
 
@@ -85,7 +85,7 @@ router.put('/:name', function(req, res) {
     {new: true}
   )
   .then(result => res.json({'status':'success', 'data':result}))
-  .catch(err => res.json({'status': 'failed', 'error': err}));
+  .catch(err => res.status(500).json({'status': 'failed', 'error': err}));
 });
 
 /* *****************************************************************************
@@ -105,15 +105,15 @@ router.delete('/:name', function(req, res) {
   query.select(activity);
   query.exec(function(err, result) {
     if (err) {
-      res.json({'status': 'failed', 'error': err});
+      res.status(500).json({'status': 'failed', 'error': err.message});
     } else {
       console.log(result.user);
       if (result.user.activites) {
-        res.json({'status': 'failed', 'error': 'That activity already exists'});
+        res.status(409).json({'status': 'failed', 'error': 'That activity already exists'});
       } else {
         Tracker.collection.update({_id: result._id},{$unset: deleteMe}, {new: true}, function(err, newItem) {
           if (err) {
-            res.json({'status': 'failed', 'error': err});
+            res.status(500).json({'status': 'failed', 'error': err.message});
           } else {
             res.json({'status': 'success', 'message': newItem});
           }
@@ -145,7 +145,7 @@ router.post('/stats/:name', function(req, res) {
     res.json({'status':'success', 'data':result});
   })
   .catch(function(err){
-    res.json({'error': err});
+    res.status(500).json({'error': err.message});
   });
 });
 
@@ -165,7 +165,7 @@ router.delete('/stats/:name', function(req, res) {
     {$pull: {[deleteActivity]: {date: req.body.date}}},
     {new: true})
   .then(result => res.json({'status':'success','data':result}))
-  .catch(err => res.json({'status':'failed','error':err}));
+  .catch(err => res.status(500).json({'status':'failed','error':err.message}));
 });
 
 module.exports = router;

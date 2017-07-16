@@ -1,7 +1,9 @@
 'use strict';
 
+const activitiesContainer = document.querySelector('.activities-container');
+
 function getAllActivities () {
-  const activitiesContainer = document.querySelector('.activities-container');
+
   var headers = new Headers();
   var myInit = { method: 'GET',
                  headers: headers,
@@ -9,17 +11,42 @@ function getAllActivities () {
                  cache: 'default',
                  credentials: 'include' };
 
-  fetch('http://localhost:3000/activities', myInit).then(function(response) {
+  fetch('https://stat-tracker-tiy.herokuapp.com/activities', myInit).then(function(response) {
     if (response.ok) {
       return response;
     }
   }).then(function(results) {
-    console.log(results);
+    displayActivities(results.data.user);
   }).catch(function(error) {
-    console.log('There has been a problem with your fetch operation: ' + error.message);
+    return error;
   });
 }
 
+function displayActivities(data) {
+  if (Object.keys(data.activities)) {
+    Object.keys(data.activities).forEach(function(activity) {
+      console.log('activities: '+activity);
+      const activityBox = document.element.createElement('div');
+      const activityName = document.createElement('h2');
+      activityName.textContent = (activity);
+      activityBox.appendChild(activityName);
+      activitiesContainer.appendChild(activityBox);
+    });
+  }
+}
+
 (function() {
-  getAllActivities();
+  const serverResponse = getAllActivities();
+  if (serverResponse.status === 'error') {
+    activitiesContainer.innerHTML = '<span class="error">There was a problem</span>';
+  } else if (serverResponse.data.user.activities) {
+    serverResponse.data.user.activities.keys.forEach(function(activity) {
+      console.log('activities: '+activity);
+      const activityBox = document.element.createElement('div');
+      const activityName = document.createElement('h2');
+      activityName.textContent = (activity);
+      activityBox.appendChild(activityName);
+      activitiesContainer.appendChild(activityBox);
+    });
+  }
 })();
