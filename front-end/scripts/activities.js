@@ -6,7 +6,7 @@ logoutLink.addEventListener('click', function(e){
   e.preventDefault();
   fetch('https://stat-tracker-tiy.herokuapp.com/logout', {method: 'GET', mode:'no-cors'})
   .then(function (response) {
-    if (!response.ok) {
+    if (response.status === 'success') {
       console.log('You have been logged out.');
     }
   })

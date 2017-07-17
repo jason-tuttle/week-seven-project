@@ -8,11 +8,18 @@
 </head>
 <body>
   <div class="activities">
-    <h1>{{user.username}}</h1>
+    <h1>{{data.username}}</h1>
 
-    {{#user.activities}}
-      {{activity}}
-    {{/user.activities}}
+    {{#data.activities}}
+      <h3>{{name}}</h3>&nbsp;{{unit}}<br>
+      Reps:
+      <ul>
+        {{#reps}}
+          <li>{{date}}, {{count}}</li>
+        {{/reps}}
+      </ul>
+
+    {{/data.activities}}
   </div>
 
 </body>

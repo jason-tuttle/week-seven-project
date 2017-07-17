@@ -10,6 +10,10 @@ const BasicStrategy = require('passport-http').BasicStrategy;
 const mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
 mongoose.set('debug', true);
+let uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/tracker';
+// connect to db
+mongoose.connect(uri);
+
   // grab a handle for our model
 const Tracker = require('./models/tracker');
   // gonna need to fetch form data from request body
@@ -25,13 +29,14 @@ app.set('view engine', 'mustache');
 const authMiddleware = passport.authenticate('basic', {session: false});
 
 passport.use(new BasicStrategy(function(username, password, done) {
-  Tracker.findOne({'user.username': username}, {'user.username': 1, 'user.password': 1}, function(err, record) {
+  Tracker.findOne({'user.username': username}, {'user.username': 1, 'user.password': 1}, function(err, result) {
     if (err) {
       console.log(err);
     } else {
+      console.log(result);
       let loggedInUser = '';
-      if (record.user.password === password) {
-        loggedInUser = record.user.username;
+      if (result.user.password === password) {
+        loggedInUser = result.user.username;
       }
       if (loggedInUser) {
         return done(null, loggedInUser);
@@ -42,17 +47,11 @@ passport.use(new BasicStrategy(function(username, password, done) {
   });
 }));
 
-let uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/tracker';
-// connect to db
-mongoose.connect(uri);
-
 app.get('/', function(req, res) {
   res.render('index');
 });
 
-app.get('/login', authMiddleware, function(req, res) {
-  res.redirect('/activities');
-});
+
 
 app.post('/register', function(req, res) {
   let newActivity = {};
@@ -69,13 +68,17 @@ app.post('/register', function(req, res) {
   .catch(err => res.json({'status': 'failed', 'data': err}));
 });
 
+app.get('/login', authMiddleware, function(req, res, next) {
+  // res.redirect('/activities');
+  next();
+});
+
 app.use('/activities', authMiddleware, trackerRouter);
 
 // LOGOUT
 app.get('/logout', function(req, res) {
   req.logout();
-  res.status(401);
-  res.json({'status': 'success', 'data':'loggedOut'});
+  res.status(401).json({'status': 'success', 'data':'loggedOut'});
 });
 
 app.listen(process.env.PORT || 3000, function() { console.log('Broadcasting on 3000FM...');});

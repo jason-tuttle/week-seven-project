@@ -8,12 +8,21 @@ var tracker = new Tracker(
   {user: {
     username:'bob',
     password: 'password',
-    activities:{
-      run: {
-        units: 'laps',
-        reps: []
+    activities:[
+      {
+        name: 'run',
+        unit: 'laps',
+        reps: [
+          { date: '07/10/2017',
+            count: 4
+          },
+          {
+            date: '07/12/2017',
+            count: 5
+          }
+        ]
       }
-    }
+    ]
   }
 });
 tracker.save()
@@ -23,3 +32,20 @@ tracker.save()
 console.log('Did a thing?');
 
 mongoose.connection.close();
+
+// user: {
+//   username: { type: String, required: true, unique: true },
+//   password: { type: String, required: true },
+//   activities: [
+//     {
+//       name: String,
+//       unit: String,
+//       reps: [
+//         {
+//           date: {type: Date, default: Date.now },
+//           count: Number
+//         }
+//       ]
+//     }
+//   ]
+// }
