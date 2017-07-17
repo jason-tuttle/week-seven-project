@@ -4,7 +4,13 @@ const activitiesContainer = document.querySelector('.activities-container');
 const logoutLink = document.querySelector('#logout');
 logoutLink.addEventListener('click', function(e){
   e.preventDefault();
-  fetch('https://stat-tracker-tiy.herokuapp.com/logout', {mode:'no-cors'}).then();
+  fetch('https://stat-tracker-tiy.herokuapp.com/logout', {method: 'GET', mode:'no-cors'})
+  .then(function (response) {
+    if (!response.ok) {
+      console.log('You have been logged out.');
+    }
+  })
+    .then(document.location.assign('./index.html'));
 });
 
 function getAllActivities () {

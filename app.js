@@ -73,6 +73,7 @@ app.use('/activities', authMiddleware, trackerRouter);
 
 // LOGOUT
 app.get('/logout', function(req, res) {
+  req.user = null;
   res.status(401);
   res.redirect('/');
 });
