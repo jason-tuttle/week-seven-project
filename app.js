@@ -73,9 +73,9 @@ app.use('/activities', authMiddleware, trackerRouter);
 
 // LOGOUT
 app.get('/logout', function(req, res) {
-  req.user = null;
+  req.logout();
   res.status(401);
-  res.redirect('/');
+  res.json({'status': 'success', 'data':'loggedOut'});
 });
 
 app.listen(process.env.PORT || 3000, function() { console.log('Broadcasting on 3000FM...');});

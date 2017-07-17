@@ -22,9 +22,8 @@ function getAllActivities () {
                  cache: 'no-cache',
                  credentials: 'include' };
 
-  fetch('https://stat-tracker-tiy.herokuapp.com/activities', myInit).then(function(response) {
-    console.log(`response status: ${response.status}`);
-    console.log(`response body: ${response.body}`);
+  fetch('https://stat-tracker-tiy.herokuapp.com/activities', myInit)
+  .then(function(response) {
     if (response.status < 400) {
       return response;
     }
