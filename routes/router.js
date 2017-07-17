@@ -61,7 +61,7 @@ router.get('/:name', function(req, res) {
   const activity = 'user.activities.' + req.params.name;
   let act = Tracker.findOne({'user.username': req.user});
   act.select(activity);
-  act.exec((err, results) => err ? res.status(500).json(err) : res.json(results));
+  act.exec((err, results) => err ? res.status(500).json(err) : res.render('activities', {results}));
   // Tracker.find({'user.username': req.user}).select(activity).exec(function(results) {res.json(results);});
 });
 

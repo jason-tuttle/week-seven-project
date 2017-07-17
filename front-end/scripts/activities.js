@@ -1,19 +1,24 @@
 'use strict';
 
 const activitiesContainer = document.querySelector('.activities-container');
+const logoutLink = document.querySelector('#logout');
+logoutLink.addEventListener('click', function(e){
+  e.preventDefault();
+  fetch('https://stat-tracker-tiy.herokuapp.com/logout', {mode:'no-cors'}).then();
+});
 
 function getAllActivities () {
 
-  var headers = new Headers();
+  var headers = new Headers({'Content-Type': 'application/json'});
   var myInit = { method: 'GET',
                  headers: headers,
                  mode: 'no-cors',
-                 cache: 'reload',
+                 cache: 'no-cache',
                  credentials: 'include' };
 
   fetch('https://stat-tracker-tiy.herokuapp.com/activities', myInit).then(function(response) {
-    console.log(response.status);
-    console.log(response.body);
+    console.log(`response status: ${response.status}`);
+    console.log(`response body: ${response.body}`);
     if (response.status < 400) {
       return response;
     }
